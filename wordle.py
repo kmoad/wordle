@@ -21,17 +21,16 @@ def filter_words(words, include, exclude, fixed):
         for let in exclude:
             if let in word:
                 exclude_fail = True
-                continue
+                break
         if exclude_fail:
             continue
         fixed_fail = False
         for i, let in enumerate(fixed):
             if not re.match(r'[A-Z]',let.upper()):
                 continue
-            else:
-                if word[i] != let:
-                    fixed_fail = True
-                    break
+            if word[i] != let:
+                fixed_fail = True
+                break
         if fixed_fail:
             continue
         matching.append(word)
