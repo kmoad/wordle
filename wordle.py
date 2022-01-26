@@ -1,4 +1,5 @@
 import re
+import json
 from collections import defaultdict, Counter
 
 def filter_words(words, include, exclude, fixed):
@@ -37,16 +38,11 @@ def filter_words(words, include, exclude, fixed):
     return matching
 
 def get_words():
-    words = []
-    with open('/usr/share/dict/words') as f:
-        for l in f:
-            word = l.strip()
-            word = word.upper()
-            if len(word) != 5:
-                continue
-            if not re.match(r'[A-Z]*$', word):
-                continue
-            words.append(word)
+    with open('La.json') as f:
+        words = json.load(f)
+    with open('Ta.json') as f:
+        words += json.load(f)
+    words = [_.upper() for _ in words]
     return words
 
 def letter_frequency(words):
@@ -59,10 +55,12 @@ def letter_frequency(words):
         freq[let] = counts[let]/total
     return freq
 
-def rank_words(words, let_freq):
+def rank_words(words):
+    let_freq = letter_frequency(words)
     scored = []
     for word in words:
-        score = sum([let_freq[let] for let in word])
+        let_freq_scores = {let:let_freq[let] for let in word}
+        score = sum({let:let_freq[let] for let in word}.values())
         scored.append((score, word))
     scored.sort(reverse=True)
     return [_[1] for _ in scored]
@@ -85,10 +83,13 @@ if __name__ == '__main__':
         default='',
         help='letters with fixed positions. Must be 5 letters long. Use _ for unknown letters',
     )
+    parser.add_argument('-a','--all',
+        action='store_true',
+        help='Print all suggested words, not just first 10',
+    )
     args = parser.parse_args()
 
     words = get_words()
-    let_freq = letter_frequency(words)
 
     include = {}
     if args.include:
@@ -99,7 +100,9 @@ if __name__ == '__main__':
     
     
     match_words = filter_words(words, include, args.exclude.upper(), args.fixed.upper())
-    print('\n'.join(match_words))
-    #ranked_words = rank_words(match_words, let_freq)
-    #print('\n'.join(ranked_words))
+    ranked_words = rank_words(match_words)
+    if args.all:
+        print('\n'.join(ranked_words))
+    else:
+        print('\n'.join(ranked_words[:10]))
     
