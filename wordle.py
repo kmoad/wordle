@@ -45,7 +45,7 @@ def get_words():
     return words
 
 def letter_frequency(words):
-    freq = defaultdict(lambda: 0)
+    freq = defaultdict(int)
     counts = Counter()
     for word in words:
         counts.update(word)
@@ -54,16 +54,40 @@ def letter_frequency(words):
         freq[let] = counts[let]/total
     return freq
 
+def position_frequency(words):
+    counts = [Counter() for _ in range(5)]
+    for word in words:
+        for i, let in enumerate(word):
+            counts[i].update(let)
+    n = len(words)
+    freqs = []
+    for counter in counts:
+        freqs.append({let: (counter[let]/n) for let in counter})
+    return freqs
+
 def rank_words(words):
     let_freq = letter_frequency(words)
+    pos_freq = position_frequency(words)
     scored = []
     for word in words:
         let_freq_scores = {let:let_freq[let] for let in word}
-        score = sum({let:let_freq[let] for let in word}.values())
+        freq_score = sum({let:let_freq[let] for let in word}.values())
+        pos_score = sum((pos_freq[i][let] for i,let in enumerate(word)))
+        score = freq_score + pos_score
         scored.append((score, word))
     scored.sort(reverse=True)
     return [_[1] for _ in scored]
-    
+
+def rank_words_pos(words):
+    pos_freq = position_frequency(words)
+    scored = []
+    for word in words:
+        score = 0
+        for i, let in enumerate(word):
+            score += pos_freq[i][let]
+        scored.append((score, word))
+    scored.sort(reverse=True)
+    return [_[1] for _ in scored]
 
 if __name__ == '__main__':
     import re
