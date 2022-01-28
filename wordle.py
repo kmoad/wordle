@@ -3,8 +3,11 @@ import json
 from collections import defaultdict, Counter
 
 def filter_words(words, include, exclude, fixed):
+    fixed_counts = Counter(fixed)
     matching = []
     for word in words:
+        let_counts = Counter(word)
+        # Include
         include_fail = False
         for let in include:
             if let not in word:
@@ -17,13 +20,16 @@ def filter_words(words, include, exclude, fixed):
                         break
         if include_fail:
             continue
+        # Exclude
         exclude_fail = False
         for let in exclude:
-            if let in word:
+            if let_counts[let] > fixed_counts[let]:
+            #if let in word:
                 exclude_fail = True
                 break
         if exclude_fail:
             continue
+        # Fixed
         fixed_fail = False
         for i, let in enumerate(fixed):
             if not re.match(r'[A-Z]',let.upper()):
@@ -73,18 +79,7 @@ def rank_words(words):
         let_freq_scores = {let:let_freq[let] for let in word}
         freq_score = sum({let:let_freq[let] for let in word}.values())
         pos_score = sum((pos_freq[i][let] for i,let in enumerate(word)))
-        score = freq_score + pos_score
-        scored.append((score, word))
-    scored.sort(reverse=True)
-    return [_[1] for _ in scored]
-
-def rank_words_pos(words):
-    pos_freq = position_frequency(words)
-    scored = []
-    for word in words:
-        score = 0
-        for i, let in enumerate(word):
-            score += pos_freq[i][let]
+        score = 0.7*freq_score + 0.3*pos_score
         scored.append((score, word))
     scored.sort(reverse=True)
     return [_[1] for _ in scored]
