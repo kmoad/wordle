@@ -105,6 +105,10 @@ if __name__ == '__main__':
         action='store_true',
         help='Print all suggested words, not just first 10',
     )
+    parser.add_argument('-c','--count',
+        action='store_true',
+        help='Print only the number of matching words',
+    )
     args = parser.parse_args()
 
     words = get_words()
@@ -119,7 +123,9 @@ if __name__ == '__main__':
     
     match_words = filter_words(words, include, args.exclude.upper(), args.fixed.upper())
     ranked_words = rank_words(match_words)
-    if args.all:
+    if args.count:
+        print(len(ranked_words))
+    elif args.all:
         print('\n'.join(ranked_words))
     else:
         print('\n'.join(ranked_words[:10]))
