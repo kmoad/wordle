@@ -42,11 +42,12 @@ def filter_words(words, include, exclude, fixed):
         matching.append(word)
     return matching
 
-def get_words():
+def get_words(common=False):
     with open('La.json') as f:
         words = json.load(f)
-    with open('Ta.json') as f:
-        words += json.load(f)
+    if not common:
+        with open('Ta.json') as f:
+            words += json.load(f)
     words = [_.upper() for _ in words]
     return words
 
@@ -109,9 +110,13 @@ if __name__ == '__main__':
         action='store_true',
         help='Print only the number of matching words',
     )
+    parser.add_argument('-s','--solve',
+        action='store_true',
+        help='Guess words most likely to solve the puzzle',
+    )
     args = parser.parse_args()
 
-    words = get_words()
+    words = get_words(common=args.solve)
 
     include = {}
     if args.include:
