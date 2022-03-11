@@ -90,27 +90,27 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
     
     parser = ArgumentParser()
-    parser.add_argument('-i','--include',
+    parser.add_argument('-i','-I','--include',
         default='',
         help='Letters to include, and positions they are not in. Format A24,B0',
     )
-    parser.add_argument('-e','--exclude',
+    parser.add_argument('-e','-E','--exclude',
         default='',
         help='letters to exclude',
     )
-    parser.add_argument('-f','--fixed',
+    parser.add_argument('-f','-F','--fixed',
         default='',
         help='letters with fixed positions. Must be 5 letters long. Use _ for unknown letters',
     )
-    parser.add_argument('-a','--all',
+    parser.add_argument('-a','-A','--all',
         action='store_true',
         help='Print all suggested words, not just first 10',
     )
-    parser.add_argument('-c','--count',
+    parser.add_argument('-c','-C','--count',
         action='store_true',
         help='Print only the number of matching words',
     )
-    parser.add_argument('-s','--solve',
+    parser.add_argument('-s','-S','--solve',
         action='store_true',
         help='Guess words most likely to solve the puzzle',
     )
