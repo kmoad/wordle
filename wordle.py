@@ -24,7 +24,6 @@ def filter_words(words, include, exclude, fixed):
         exclude_fail = False
         for let in exclude:
             if let_counts[let] > fixed_counts[let]:
-            #if let in word:
                 exclude_fail = True
                 break
         if exclude_fail:
@@ -77,8 +76,7 @@ def rank_words(words):
     pos_freq = position_frequency(words)
     scored = []
     for word in words:
-        let_freq_scores = {let:let_freq[let] for let in word}
-        freq_score = sum({let:let_freq[let] for let in word}.values())
+        freq_score = sum((let_freq[let] for let in set(word)))
         pos_score = sum((pos_freq[i][let] for i,let in enumerate(word)))
         score = 0.7*freq_score + 0.3*pos_score
         scored.append((score, word))
@@ -123,7 +121,7 @@ if __name__ == '__main__':
         for tok in args.include.split(','):
             let = tok[0].upper()
             positions = {int(_) for _ in tok[1:]}
-            include[let] = positions        
+            include[let] = positions
     
     
     match_words = filter_words(words, include, args.exclude.upper(), args.fixed.upper())
